@@ -1,7 +1,5 @@
 FROM python:3.10-alpine
 
-ENV PATH=/usr/local/src:$PATH
-
 # Versions
 ARG TERRAFORM_VERSION=1.6.6
 
