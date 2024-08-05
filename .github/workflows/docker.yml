@@ -21,7 +21,7 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Set up cosign
-        uses: sigstore/cosign-installer@main    
+      uses: sigstore/cosign-installer@main    
     - name: Docker meta
       id: meta_build
       uses: docker/metadata-action@v4
