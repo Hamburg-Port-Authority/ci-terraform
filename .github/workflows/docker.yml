@@ -50,3 +50,8 @@ jobs:
         env:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}    
+    - name: Check images
+        run: |
+          docker buildx imagetools inspect ghcr.io/Hamburg-Port-Authority/ci-terraform:${{ steps.meta_build.outputs.tags }}
+          docker pull ghcr.io/Hamburg-Port-Authority/ci-terraform:${{ steps.meta_build.outputs.tags }}
+          cosign verify --key cosign.pub ghcr.io/Hamburg-Port-Authority/ci-terraform:${{ steps.meta_build.outputs.tags }}      
