@@ -20,8 +20,13 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Set up cosign
-      uses: sigstore/cosign-installer@main    
+
+    - name: Install cosign
+      uses: sigstore/cosign-installer@v3.2.0 
+
+    - name: Cosign check install!
+      run: cosign version
+
     - name: Docker meta
       id: meta_build
       uses: docker/metadata-action@v4
@@ -35,6 +40,7 @@ jobs:
         tags: |
           type=schedule
           type=ref,event=tag
+
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
@@ -43,10 +49,16 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta_build.outputs.tags }}
         labels: ${{ steps.meta_build.outputs.labels }}
-    - name: sign container image
-      run: |
-        cosign sign --key env://COSIGN_KEY ghcr.io/Hamburg-Port-Authority/ci-terraform:${{ steps.meta_build.outputs.tags }}
-      shell: bash
+
+    - name: Sign the images with GitHub OIDC Token
       env:
-        COSIGN_KEY: ${{secrets.COSIGN_KEY}}
-        COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}        
+        DIGEST: ${{ steps.push-step.outputs.digest }}
+        TAGS: ghcr.io/${{ github.repository }}
+        COSIGN_EXPERIMENTAL: "true"
+      run: cosign sign --yes "${TAGS}@${DIGEST}"     
+
+    - name: Verify the images
+      run: |
+        cosign verify ghcr.io/Hamburg-Port-Authority/ci-terraform \
+          --certificate-identity https://github.com/Hamburg-Port-Authority/ci-terraform/.github/workflows/main.yml@refs/heads/main \
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq     
