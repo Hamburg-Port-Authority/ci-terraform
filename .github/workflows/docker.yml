@@ -42,6 +42,7 @@ jobs:
           type=ref,event=tag
 
     - name: Build and push
+      id: push-step
       uses: docker/build-push-action@v3
       with:
         context: .
