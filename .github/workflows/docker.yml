@@ -55,7 +55,7 @@ jobs:
         labels: ${{ steps.meta_build.outputs.labels }}
 
     - name: Sign the container image
-      run: cosign sign --yes ghcr.io/${{ github.repository }}@${{ steps.meta_build.outputs.tags }}
+      run: cosign sign --yes ${{ steps.meta_build.outputs.tags }}
 
     - name: Verify the images
       run: |
