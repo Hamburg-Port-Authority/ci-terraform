@@ -25,9 +25,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install cosign
-      uses: sigstore/cosign-installer@main
-      with:
-        cosign-release: 'v3.2.0' 
+      uses: sigstore/cosign-installer@v3.2.0 
 
     - name: Cosign check install!
       run: cosign version
