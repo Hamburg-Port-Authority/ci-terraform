@@ -35,7 +35,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/Hamburg-Port-Authority/ci-terraform
+          ghcr.io/Hamburg-Port-Authority/Cosign-Test
         labels: |
           org.opencontainers.image.title="ci-terraform"
           org.opencontainers.image.description="Image with terraform and azureCli"
@@ -61,6 +61,6 @@ jobs:
 
     - name: Verify the images
       run: |
-        cosign verify ghcr.io/Hamburg-Port-Authority/ci-terraform \
-          --certificate-identity https://github.com/Hamburg-Port-Authority/ci-terraform/.github/workflows/main.yml@refs/heads/main \
+        cosign verify ghcr.io/Hamburg-Port-Authority/Cosign-Test \
+          --certificate-identity https://github.com/Hamburg-Port-Authority/Cosign-Test/.github/workflows/main.yml@refs/heads/main \
           --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq     
