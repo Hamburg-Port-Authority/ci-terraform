@@ -55,6 +55,8 @@ jobs:
         labels: ${{ steps.meta_build.outputs.labels }}
 
     - name: Sign the container image
+      env:
+        COSIGN_EXPERIMENTAL: "true"
       run: cosign sign --yes ${{ steps.meta_build.outputs.tags }}
 
     - name: Verify the images
