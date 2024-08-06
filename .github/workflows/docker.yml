@@ -25,7 +25,9 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install cosign
-      uses: sigstore/cosign-installer@v3.2.0 
+      uses: sigstore/cosign-installer@main
+      with:
+        cosign-release: 'v3.2.0' 
 
     - name: Cosign check install!
       run: cosign version
@@ -54,12 +56,8 @@ jobs:
         tags: ${{ steps.meta_build.outputs.tags }}
         labels: ${{ steps.meta_build.outputs.labels }}
 
-    - name: Sign the images with GitHub OIDC Token
-      env:
-        DIGEST: ${{ steps.push-step.outputs.digest }}
-        TAGS: ghcr.io/${{ github.repository }}
-        COSIGN_EXPERIMENTAL: "true"
-      run: cosign sign --yes ghcr.io/${{ github.repository }}@${{ steps.push-step.outputs.digest }}   
+    - name: Sign the container image
+      run: cosign sign --yes ghcr.io/${{ github.repository }}@${{ steps.push-step.outputs.digest }}
 
     - name: Verify the images
       run: |
