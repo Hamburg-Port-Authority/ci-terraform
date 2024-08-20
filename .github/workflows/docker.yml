@@ -35,7 +35,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ghcr.io/Hamburg-Port-Authority/Cosign-Test
+          ghcr.io/Hamburg-Port-Authority/ci-terraform
         labels: |
           org.opencontainers.image.title="ci-terraform"
           org.opencontainers.image.description="Image with terraform and azureCli"
@@ -54,13 +54,19 @@ jobs:
         tags: ${{ steps.meta_build.outputs.tags }}
         labels: ${{ steps.meta_build.outputs.labels }}
 
+    - name: Extract First Tag
+      id: extract_tag
+      run: echo "::set-output name=first_tag::$(echo '${{ steps.meta_build.outputs.tags }}' | awk '{print $1}')"
+    - name: Debug First Tag
+      run: echo "First Tag ${{ steps.extract_tag.outputs.first_tag }}"
+
     - name: Sign the container image
       env:
         COSIGN_EXPERIMENTAL: "true"
-      run: cosign sign --yes ${{ steps.meta_build.outputs.tags }}
+      run: cosign sign --yes ${{ steps.extract_tag.outputs.first_tag }}
 
     - name: Verify the images
       run: |
-        cosign verify ghcr.io/Hamburg-Port-Authority/Cosign-Test \
-          --certificate-identity https://github.com/Hamburg-Port-Authority/Cosign-Test/.github/workflows/main.yml@refs/heads/main \
-          --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq     
+        cosign verify ghcr.io/Hamburg-Port-Authority/ci-terraform \
+          --certificate-identity https://github.com/Hamburg-Port-Authority/ci-terraform/.github/workflows/main.yml@refs/heads/main \
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq      
